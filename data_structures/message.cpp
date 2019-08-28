@@ -11,7 +11,7 @@
 /***************************************************/
 
 ostream& operator<<(ostream& os, const Message_t& msg) {
-  os << msg.value;
+  os << msg.packet << " " << msg.bit;
   return os;
 }
 
@@ -20,6 +20,7 @@ ostream& operator<<(ostream& os, const Message_t& msg) {
 /***************************************************/
 
 istream& operator>> (istream& is, Message_t& msg) {
-  is >> msg.value;
+  is >> msg.packet;
+  is >> msg.bit;
   return is;
 }

@@ -52,7 +52,7 @@ using namespace std;
             // state definition
             struct state_type{
               bool transmiting;
-              int packet;
+              Message_t packet;
               int index;
             }; 
             state_type state;
@@ -70,7 +70,7 @@ using namespace std;
                 state.index ++;
                 if(get_messages<typename defs::in>(mbs).size()>1) assert(false && "One message at a time");                
                 for (const auto &x : get_messages<typename defs::in>(mbs)) {
-                  state.packet = static_cast < int > (x.value);
+                  state.packet = x;
                   state.transmiting = true; 
                 }               
             }
@@ -84,10 +84,8 @@ using namespace std;
             // output function
             typename make_message_bags<output_ports>::type output() const {
               typename make_message_bags<output_ports>::type bags;
-              Message_t out;
-              if ((double)rand() / (double) RAND_MAX  < 0.95){
-                out.value = state.packet;
-                get_messages<typename defs::out>(bags).push_back(out);
+              if ((double)rand() / (double) RAND_MAX  < 0.95){                
+                get_messages<typename defs::out>(bags).push_back(state.packet);
               }
               return bags;
             }

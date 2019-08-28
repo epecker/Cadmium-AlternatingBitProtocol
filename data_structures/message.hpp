@@ -13,10 +13,11 @@ using namespace std;
 struct Message_t{
 
   Message_t(){}
-  Message_t(float i_value)
-   :value(i_value){}
+  Message_t(int i_packet, int i_bit)
+   :packet(i_packet), bit(i_bit){}
 
-  	float   value;
+  	int   packet;
+  	int   bit; 	
 
   void clear() {
    Message_t(); 

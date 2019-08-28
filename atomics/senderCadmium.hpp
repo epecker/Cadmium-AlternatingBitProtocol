@@ -31,13 +31,13 @@ using namespace std;
 
 //Port definition
     struct Sender_defs{
-        struct packetSentOut : public out_port<Message_t> {
+        struct packetSentOut : public out_port<int> {
         };
-        struct ackReceivedOut : public out_port<Message_t> {
+        struct ackReceivedOut : public out_port<int> {
         };
         struct dataOut : public out_port<Message_t> {
         };
-        struct controlIn : public in_port<Message_t> {
+        struct controlIn : public in_port<int> {
         };
         struct ackIn : public in_port<Message_t> {
         };
@@ -106,12 +106,12 @@ using namespace std;
               if((get_messages<typename defs::controlIn>(mbs).size()+get_messages<typename defs::ackIn>(mbs).size())>1) assert(false && "one message per time uniti");
               for(const auto &x : get_messages<typename defs::controlIn>(mbs)){
                 if(state.model_active == false){
-                  state.totalPacketNum = static_cast < int > (x.value);
+                  state.totalPacketNum = x;
                   if (state.totalPacketNum > 0){
                     state.packetNum = 1;
                     state.ack = false;
                     state.sending = true;
-                    state.alt_bit = state.packetNum % 2;  //set initial alt_bit
+                    state.alt_bit = 0;  //set initial alt_bit
                     state.model_active = true;
                     state.next_internal = preparationTime;
                   }else{
@@ -123,7 +123,7 @@ using namespace std;
               }
               for(const auto &x : get_messages<typename defs::ackIn>(mbs)){
                 if(state.model_active == true) { 
-                  if (state.alt_bit == static_cast < int > (x.value)) {
+                  if (state.alt_bit == x.bit) {
                     state.ack = true;
                     state.sending = false;
                     state.next_internal = TIME("00:00:00");
@@ -148,14 +148,13 @@ using namespace std;
               typename make_message_bags<output_ports>::type bags;
               Message_t out;
               if (state.sending){
-                out.value = state.packetNum * 10 + state.alt_bit;
+                out.packet = state.packetNum;
+                out.bit = state.alt_bit;
                 get_messages<typename defs::dataOut>(bags).push_back(out);
-                out.value = state.packetNum;
-                get_messages<typename defs::packetSentOut>(bags).push_back(out);
+                get_messages<typename defs::packetSentOut>(bags).push_back(state.packetNum);
               }else{
                 if (state.ack){
-                  out.value = state.alt_bit;
-                  get_messages<typename defs::ackReceivedOut>(bags).push_back(out);
+                  get_messages<typename defs::ackReceivedOut>(bags).push_back(state.alt_bit);
                 }
               }   
               return bags;

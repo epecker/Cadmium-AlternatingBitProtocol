@@ -70,7 +70,7 @@ using namespace std;
             void external_transition(TIME e, typename make_message_bags<input_ports>::type mbs) { 
               if(get_messages<typename defs::in>(mbs).size()>1) assert(false && "one message per time uniti");
               for(const auto &x : get_messages<typename defs::in>(mbs)){
-                state.ackNum = static_cast < int > (x.value);
+                state.ackNum = x.bit;
                 state.sending = true;
               }  
                            
@@ -85,10 +85,7 @@ using namespace std;
             // output function
             typename make_message_bags<output_ports>::type output() const {
               typename make_message_bags<output_ports>::type bags;
-              Message_t out;              
-              out.value = state.ackNum % 10;
-              get_messages<typename defs::out>(bags).push_back(out);
-                
+              get_messages<typename defs::out>(bags).push_back(Message_t(0, state.ackNum));
               return bags;
 
             }

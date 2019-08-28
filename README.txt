@@ -38,6 +38,8 @@ vendor [This folder contains the time class and the model to generate the inputs
 top_model [This folder contains the Alternate Bit Protocol top model and two samples for the simulation
            resutls after running the model]	
 	main.cpp
+	atomic_headers.hpp
+	logger_simulator_include.hpp
 	abp_output_0.txt
 	abp_output_1.txt
 	

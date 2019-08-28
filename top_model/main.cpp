@@ -30,29 +30,31 @@ using namespace cadmium;
 using hclock=chrono::high_resolution_clock;
 using TIME = NDTime;
 
-
-
-/***** SETING INPUT PORTS FOR COUPLEDs *****/
-struct inp_control : public in_port<Message_t>{};
-struct inp_1 : public in_port<Message_t>{};
-struct inp_2 : public in_port<Message_t>{};
-/***** SETING OUTPUT PORTS FOR COUPLEDs *****/
-struct outp_ack : public out_port<Message_t>{};
-struct outp_1 : public out_port<Message_t>{};
-struct outp_2 : public out_port<Message_t>{};
-struct outp_pack : public out_port<Message_t>{};
-
+#define SIMULATION_OUTPUT_PATH "../simulation_results/abp_output.txt"
+#define LOGGER logger_top
+#define TOP_MODEL TOP
+#define INTIAL_TIME {0}
+#define END_TIME NDTime("04:00:00:000")
 
 /********************************************/
 /****** APPLICATION GENERATOR *******************/
 /********************************************/
 template<typename T>
-class ApplicationGen : public iestream_input<Message_t,T> {
+class ApplicationGen : public iestream_input<int,T> {
 public:
   ApplicationGen() = default;
-  ApplicationGen(const char* file_path) : iestream_input<Message_t,T>(file_path) {}
+  ApplicationGen(const char* file_path) : iestream_input<int,T>(file_path) {}
 };
 
+/***** SETING INPUT PORTS FOR COUPLEDs *****/
+struct inp_control : public in_port<int>{};
+struct inp_1 : public in_port<Message_t>{};
+struct inp_2 : public in_port<Message_t>{};
+/***** SETING OUTPUT PORTS FOR COUPLEDs *****/
+struct outp_ack : public out_port<int>{};
+struct outp_1 : public out_port<Message_t>{};
+struct outp_2 : public out_port<Message_t>{};
+struct outp_pack : public out_port<int>{};
 
 int main(int argc, char ** argv) {
 
@@ -62,39 +64,15 @@ int main(int argc, char ** argv) {
    return 1; 
   }
 
-  auto start = hclock::now(); //to measure simulation execution time
-
-/*************** Loggers *******************/
-  static ofstream out_data("../simulation_results/abp_output.txt");
-    struct oss_sink_provider{
-        static ostream& sink(){          
-            return out_data;
-        }
-    };
-
-using info=logger::logger<cadmium::logger::logger_info, cadmium::dynamic::logger::formatter<TIME>, oss_sink_provider>;
-using debug=logger::logger<cadmium::logger::logger_debug, cadmium::dynamic::logger::formatter<TIME>, oss_sink_provider>;
-using state=logger::logger<cadmium::logger::logger_state, cadmium::dynamic::logger::formatter<TIME>, oss_sink_provider>;
-using log_messages=logger::logger<cadmium::logger::logger_messages, cadmium::dynamic::logger::formatter<TIME>, oss_sink_provider>;
-using routing=logger::logger<cadmium::logger::logger_message_routing, cadmium::dynamic::logger::formatter<TIME>, oss_sink_provider>;
-using global_time=logger::logger<cadmium::logger::logger_global_time, cadmium::dynamic::logger::formatter<TIME>, oss_sink_provider>;
-using local_time=logger::logger<cadmium::logger::logger_local_time, cadmium::dynamic::logger::formatter<TIME>, oss_sink_provider>;
-using log_all=logger::multilogger<info, debug, state, log_messages, routing, global_time, local_time>;
-
-using logger_top=logger::multilogger<log_messages, global_time>;
-
-/*******************************************/
-
-
+auto start = hclock::now(); //to measure simulation execution time
+  
 
 /********************************************/
 /****** APPLICATION GENERATOR *******************/
 /********************************************/
 string input_data_control = argv[1];
 const char * i_input_data_control = input_data_control.c_str();
-
 shared_ptr<dynamic::modeling::model> generator_con = dynamic::translate::make_dynamic_atomic_model<ApplicationGen, TIME, const char* >("generator_con" , move(i_input_data_control));
-
 
 /********************************************/
 /****** SENDER *******************/
@@ -105,10 +83,7 @@ shared_ptr<dynamic::modeling::model> sender1 = dynamic::translate::make_dynamic_
 /********************************************/
 /****** RECIEVER *******************/
 /********************************************/
-
 shared_ptr<dynamic::modeling::model> receiver1 = dynamic::translate::make_dynamic_atomic_model<Receiver, TIME>("receiver1");
-
-
 
 /********************************************/
 /****** SUBNET *******************/
@@ -116,6 +91,7 @@ shared_ptr<dynamic::modeling::model> receiver1 = dynamic::translate::make_dynami
 
 shared_ptr<dynamic::modeling::model> subnet1 = dynamic::translate::make_dynamic_atomic_model<Subnet, TIME>("subnet1");
 shared_ptr<dynamic::modeling::model> subnet2 = dynamic::translate::make_dynamic_atomic_model<Subnet, TIME>("subnet2");
+
 
 /************************/
 /*******NETWORK********/
@@ -184,7 +160,7 @@ dynamic::modeling::EOCs eocs_TOP = {
 dynamic::translate::make_EOC<outp_ack,outp_ack>("ABPSimulator")
 };
 dynamic::modeling::ICs ics_TOP = {
-  dynamic::translate::make_IC<iestream_input_defs<Message_t>::out,inp_control>("generator_con","ABPSimulator")
+  dynamic::translate::make_IC<iestream_input_defs<int>::out,inp_control>("generator_con","ABPSimulator")
 };
 shared_ptr<cadmium::dynamic::modeling::coupled<TIME>> TOP = make_shared<dynamic::modeling::coupled<TIME>>(
  "TOP", 
@@ -197,18 +173,7 @@ shared_ptr<cadmium::dynamic::modeling::coupled<TIME>> TOP = make_shared<dynamic:
   );
 
 ///****************////
-
-    auto elapsed1 = chrono::duration_cast<chrono::duration<double, ratio<1>>>(hclock::now() - start).count();
-    cout << "Model Created. Elapsed time: " << elapsed1 << "sec" << endl;
+  #include "logger_simulator_include.hpp"
     
-    dynamic::engine::runner<NDTime, logger_top> r(TOP, {0});
-    elapsed1 = chrono::duration_cast<chrono::duration<double, ratio<1>>>(hclock::now() - start).count();
-    cout << "Runner Created. Elapsed time: " << elapsed1 << "sec" << endl;
-
-    cout << "Simulation starts" << endl;
-
-    r.run_until(NDTime("04:00:00:000"));
-    auto elapsed = chrono::duration_cast<chrono::duration<double, std::ratio<1>>>(hclock::now() - start).count();
-    cout << "Simulation took:" << elapsed << "sec" << endl;
-    return 0;
+  return 0;
 }

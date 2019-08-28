@@ -28,23 +28,30 @@ using TIME = NDTime;
 
 
 /***** SETING INPUT PORTS FOR COUPLEDs *****/
-struct inp_controll : public cadmium::in_port<Message_t>{};
+struct inp_controll : public cadmium::in_port<int>{};
 struct inp_ack : public cadmium::in_port<Message_t>{};
 
 /***** SETING OUTPUT PORTS FOR COUPLEDs *****/
-struct outp_ack : public cadmium::out_port<Message_t>{};
+struct outp_ack : public cadmium::out_port<int>{};
 struct outp_data : public cadmium::out_port<Message_t>{};
-struct outp_pack : public cadmium::out_port<Message_t>{};
+struct outp_pack : public cadmium::out_port<int>{};
 
 
 /********************************************/
 /****** APPLICATION GENERATOR *******************/
 /********************************************/
 template<typename T>
-class ApplicationGen : public iestream_input<Message_t,T> {
+class ApplicationGenI : public iestream_input<int,T> {
 public:
-  ApplicationGen() = default;
-  ApplicationGen(const char* file_path) : iestream_input<Message_t,T>(file_path) {}
+  ApplicationGenI() = default;
+  ApplicationGenI(const char* file_path) : iestream_input<int,T>(file_path) {}
+};
+
+template<typename T>
+class ApplicationGenM : public iestream_input<Message_t,T> {
+public:
+  ApplicationGenM() = default;
+  ApplicationGenM(const char* file_path) : iestream_input<Message_t,T>(file_path) {}
 };
 
 
@@ -82,12 +89,12 @@ using logger_top=cadmium::logger::multilogger<log_messages, global_time>;
 string input_data_control = "../input_data/sender_input_test_control_In.txt";
 const char * i_input_data_control = input_data_control.c_str();
 
-std::shared_ptr<cadmium::dynamic::modeling::model> generator_con = cadmium::dynamic::translate::make_dynamic_atomic_model<ApplicationGen, TIME, const char* >("generator_con" , std::move(i_input_data_control));
+std::shared_ptr<cadmium::dynamic::modeling::model> generator_con = cadmium::dynamic::translate::make_dynamic_atomic_model<ApplicationGenI, TIME, const char* >("generator_con" , std::move(i_input_data_control));
 
 string input_data_ack = "../input_data/sender_input_test_ack_In.txt";
 const char * i_input_data_ack = input_data_ack.c_str();
 
-std::shared_ptr<cadmium::dynamic::modeling::model> generator_ack = cadmium::dynamic::translate::make_dynamic_atomic_model<ApplicationGen, TIME, const char* >("generator_ack" , std::move(i_input_data_ack));
+std::shared_ptr<cadmium::dynamic::modeling::model> generator_ack = cadmium::dynamic::translate::make_dynamic_atomic_model<ApplicationGenM, TIME, const char* >("generator_ack" , std::move(i_input_data_ack));
 
 
 /********************************************/
@@ -110,7 +117,7 @@ cadmium::dynamic::translate::make_EOC<Sender_defs::ackReceivedOut,outp_ack>("sen
 cadmium::dynamic::translate::make_EOC<Sender_defs::dataOut,outp_data>("sender1")
 };
 cadmium::dynamic::modeling::ICs ics_TOP = {
-  cadmium::dynamic::translate::make_IC<iestream_input_defs<Message_t>::out,Sender_defs::controlIn>("generator_con","sender1"),
+  cadmium::dynamic::translate::make_IC<iestream_input_defs<int>::out,Sender_defs::controlIn>("generator_con","sender1"),
   cadmium::dynamic::translate::make_IC<iestream_input_defs<Message_t>::out,Sender_defs::ackIn>("generator_ack","sender1")
 };
 std::shared_ptr<cadmium::dynamic::modeling::coupled<TIME>> TOP = std::make_shared<cadmium::dynamic::modeling::coupled<TIME>>(
