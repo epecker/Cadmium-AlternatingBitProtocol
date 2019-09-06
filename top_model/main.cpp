@@ -1,9 +1,3 @@
-//C++ headers
-#include <iostream>
-#include <chrono>
-#include <algorithm>
-#include <string>
-
 //Cadmium Simulator headers
 #include <cadmium/modeling/coupling.hpp>
 #include <cadmium/modeling/ports.hpp>
@@ -15,13 +9,20 @@
 #include <cadmium/logger/tuple_to_ostream.hpp>
 #include <cadmium/logger/common_loggers.hpp>
 
+#include "atomic_headers.hpp"
 
 #include "../vendor/NDTime.hpp"
 #include "../vendor/iestream.hpp"
 
 #include "../data_structures/message.hpp"
 
-#include "atomic_headers.hpp"
+
+
+//C++ headers
+#include <iostream>
+#include <chrono>
+#include <algorithm>
+#include <string>
 
 
 using namespace std;
@@ -29,12 +30,6 @@ using namespace cadmium;
 
 using hclock=chrono::high_resolution_clock;
 using TIME = NDTime;
-
-#define SIMULATION_OUTPUT_PATH "../simulation_results/abp_output.txt"
-#define LOGGER logger_top
-#define TOP_MODEL TOP
-#define INTIAL_TIME {0}
-#define END_TIME NDTime("04:00:00:000")
 
 /********************************************/
 /****** APPLICATION GENERATOR *******************/
@@ -172,8 +167,39 @@ shared_ptr<cadmium::dynamic::modeling::coupled<TIME>> TOP = make_shared<dynamic:
  ics_TOP 
   );
 
-///****************////
-  #include "logger_simulator_include.hpp"
+
+  /*************** Loggers *******************/
+  static ofstream out_data("../simulation_results/abp_output.txt");
+    struct oss_sink_provider{
+        static ostream& sink(){          
+            return out_data;
+        }
+    };
+using info=logger::logger<logger::logger_info, dynamic::logger::formatter<TIME>, oss_sink_provider>;
+using debug=logger::logger<logger::logger_debug, dynamic::logger::formatter<TIME>, oss_sink_provider>;
+using state=logger::logger<logger::logger_state, dynamic::logger::formatter<TIME>, oss_sink_provider>;
+using log_messages=logger::logger<logger::logger_messages, dynamic::logger::formatter<TIME>, oss_sink_provider>;
+using routing=logger::logger<logger::logger_message_routing, dynamic::logger::formatter<TIME>, oss_sink_provider>;
+using global_time=logger::logger<logger::logger_global_time, dynamic::logger::formatter<TIME>, oss_sink_provider>;
+using local_time=logger::logger<logger::logger_local_time, dynamic::logger::formatter<TIME>, oss_sink_provider>;
+using log_all=logger::multilogger<info, debug, state, log_messages, routing, global_time, local_time>;
+using logger_top=logger::multilogger<log_messages, global_time>;
+/*******************************************/
+/************ Simulator ********************/
+auto elapsed1 = chrono::duration_cast<chrono::duration<double, ratio<1>>>(hclock::now() - start).count();
+cout << "Model Created. Elapsed time: " << elapsed1 << "sec" << endl;
+    
+dynamic::engine::runner<TIME, logger_top> r(TOP, {0});
+elapsed1 = chrono::duration_cast<chrono::duration<double, ratio<1>>>(hclock::now() - start).count();
+cout << "Runner Created. Elapsed time: " << elapsed1 << "sec" << endl;
+
+cout << "Simulation starts" << endl;
+
+r.run_until(NDTime("04:00:00:000"));
+auto elapsed = chrono::duration_cast<chrono::duration<double, std::ratio<1>>>(hclock::now() - start).count();
+cout << "Simulation took:" << elapsed << "sec" << endl;
+
+/*****************************************/
     
   return 0;
 }

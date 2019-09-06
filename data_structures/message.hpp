@@ -11,17 +11,12 @@ using namespace std;
 /**************** Message_t ****************/
 /*******************************************/
 struct Message_t{
-
   Message_t(){}
   Message_t(int i_packet, int i_bit)
    :packet(i_packet), bit(i_bit){}
 
   	int   packet;
-  	int   bit; 	
-
-  void clear() {
-   Message_t(); 
-  }
+  	int   bit;
 };
 
 istream& operator>> (istream& is, Message_t& msg);

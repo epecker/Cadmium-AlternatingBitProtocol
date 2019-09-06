@@ -19,7 +19,7 @@
 
 #include "../data_structures/message.hpp"
 
-#include "../atomics/subnetCadmium.hpp"
+#include "../atomics/subnet.hpp"
 
 using namespace std;
 

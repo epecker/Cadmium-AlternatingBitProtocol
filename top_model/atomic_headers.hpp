@@ -9,8 +9,9 @@
 #ifndef __ATOMIC_HEADES_HPP__
 #define __ATOMIC_HEADES_HPP__
 
+#include "../atomics/subnet.hpp"
 #include "../atomics/senderCadmium.hpp"
 #include "../atomics/receiverCadmium.hpp"
-#include "../atomics/subnetCadmium.hpp"
+
 
 #endif //__ATOMIC_HEADES_HPP__
