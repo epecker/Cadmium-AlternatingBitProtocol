@@ -29,11 +29,10 @@ struct Subnet_defs{
 };
 
 template<typename TIME> class Subnet{
-    using defs=Subnet_defs; // putting definitions in context
     public:
     // ports definition
-    using input_ports=tuple<typename defs::in>;
-    using output_ports=tuple<typename defs::out>;
+    using input_ports=tuple<typename Subnet_defs::in>;
+    using output_ports=tuple<typename Subnet_defs::out>;
     // state definition
     struct state_type{
         bool transmitting;
@@ -42,7 +41,7 @@ template<typename TIME> class Subnet{
     }; 
     state_type state;    
     // default constructor
-    Subnet() noexcept{
+    Subnet() {
         state.transmitting = false;
         state.index        = 0;
     }     
@@ -52,12 +51,12 @@ template<typename TIME> class Subnet{
     }
     // external transition
     void external_transition(TIME e, typename make_message_bags<input_ports>::type mbs) { 
+        vector<Message_t> bag_port_in;
+        bag_port_in = get_messages<typename Subnet_defs::in>(mbs);
+        if(bag_port_in.size()>1) assert(false && "One message at a time");                
         state.index ++;
-        if(get_messages<typename defs::in>(mbs).size()>1) assert(false && "One message at a time");                
-        for (const auto &x : get_messages<typename defs::in>(mbs)) {
-            state.packet = x;
-            state.transmitting = true; 
-        }               
+        state.packet = bag_port_in[0];
+        state.transmitting = true;                        
     }
     // confluence transition
     void confluence_transition(TIME e, typename make_message_bags<input_ports>::type mbs) {
@@ -67,9 +66,11 @@ template<typename TIME> class Subnet{
     // output function
     typename make_message_bags<output_ports>::type output() const {
         typename make_message_bags<output_ports>::type bags;
+        vector<Message_t> bag_port_out;
         if ((double)rand() / (double) RAND_MAX  < 0.95){                
-            get_messages<typename defs::out>(bags).push_back(state.packet);
+            bag_port_out.push_back(state.packet);
         }
+        get_messages<typename Subnet_defs::out>(bags) = bag_port_out; 
         return bags;
     }
     // time_advance function
@@ -78,9 +79,11 @@ template<typename TIME> class Subnet{
         default_random_engine generator;
         normal_distribution<double> distribution(3.0, 1.0); 
         if (state.transmitting) {
-            initializer_list<int> time = {0, 0, static_cast < int > (round(distribution(generator)))};
+            double sec_d = distribution(generator);
+            int sec_i = static_cast<int>(round(sec_d));
             // time is hour min and second
-            next_internal = TIME(time);
+            next_internal = TIME({0, 0, sec_i });
+
         }else {
             next_internal = numeric_limits<TIME>::infinity();
         }    
