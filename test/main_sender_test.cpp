@@ -19,7 +19,7 @@
 
 #include "../data_structures/message.hpp"
 
-#include "../atomics/senderCadmium.hpp"
+#include "../atomics/sender.hpp"
 
 using namespace std;
 
