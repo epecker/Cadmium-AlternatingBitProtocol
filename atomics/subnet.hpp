@@ -55,8 +55,12 @@ template<typename TIME> class Subnet{
         bag_port_in = get_messages<typename Subnet_defs::in>(mbs);
         if(bag_port_in.size()>1) assert(false && "One message at a time");                
         state.index ++;
-        state.packet = bag_port_in[0];
-        state.transmitting = true;                        
+        if ((double)rand() / (double) RAND_MAX  < 0.95){                
+            state.packet = bag_port_in[0];
+            state.transmitting = true;  
+        }else{
+            state.transmitting = false;
+        }                              
     }
     // confluence transition
     void confluence_transition(TIME e, typename make_message_bags<input_ports>::type mbs) {
@@ -66,24 +70,16 @@ template<typename TIME> class Subnet{
     // output function
     typename make_message_bags<output_ports>::type output() const {
         typename make_message_bags<output_ports>::type bags;
-        vector<Message_t> bag_port_out;
-        if ((double)rand() / (double) RAND_MAX  < 0.95){                
-            bag_port_out.push_back(state.packet);
-        }
+        vector<Message_t> bag_port_out;            
+        bag_port_out.push_back(state.packet);
         get_messages<typename Subnet_defs::out>(bags) = bag_port_out; 
         return bags;
     }
     // time_advance function
     TIME time_advance() const {
         TIME next_internal;
-        default_random_engine generator;
-        normal_distribution<double> distribution(3.0, 1.0); 
-        if (state.transmitting) {
-            double sec_d = distribution(generator);
-            int sec_i = static_cast<int>(round(sec_d));
-            // time is hour min and second
-            next_internal = TIME({0, 0, sec_i });
-
+        if (state.transmitting) {            
+            next_internal = TIME("00:00:03:000");
         }else {
             next_internal = numeric_limits<TIME>::infinity();
         }    
