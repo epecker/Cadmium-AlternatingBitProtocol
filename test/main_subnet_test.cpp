@@ -12,7 +12,7 @@
 #include "../data_structures/message.hpp"
 
 //Atomic model headers
-#include "../vendor/iestream.hpp" //Atomic model for inputs
+#include <cadmium/basic_model/pdevs/iestream.hpp> //Atomic model for inputs
 #include "../atomics/subnet.hpp"
 
 //C++ libraries
@@ -21,7 +21,7 @@
 
 using namespace std;
 using namespace cadmium;
-//using namespace cadmium::basic_models::pdevs;
+using namespace cadmium::basic_models::pdevs;
 
 using TIME = NDTime;
 
