@@ -147,7 +147,7 @@ int main(int argc, char ** argv) {
     static ofstream out_JSON("../ABP_json.json");
     struct oss_sink_JSON{
         static ostream& sink(){          
-            return out_state;
+            return out_JSON;
         }
     };
     
