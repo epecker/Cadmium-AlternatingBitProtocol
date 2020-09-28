@@ -92,7 +92,7 @@ using namespace std;
             }
 
             friend std::ostringstream& operator<<(std::ostringstream& os, const typename Receiver<TIME>::state_type& i) {
-                os << "ackNum: " << i.ackNum; 
+                os << "<" << i.ackNum << ">"; 
             return os;
             }
         };     

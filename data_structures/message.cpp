@@ -11,7 +11,7 @@
 /***************************************************/
 
 ostream& operator<<(ostream& os, const Message_t& msg) {
-  os << msg.packet << " " << msg.bit;
+  os << "<" << msg.packet << ", " << msg.bit << ">";
   return os;
 }
 

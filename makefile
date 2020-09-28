@@ -3,6 +3,7 @@ CFLAGS=-std=c++17
 
 INCLUDECADMIUM=-I ../../cadmium/include
 INCLUDEDESTIMES=-I ../../DESTimes/include
+INCLUDEJSONEXPORTER = -I ../../CadmiumModelJSONExporter/include
 
 #CREATE BIN AND BUILD FOLDERS TO SAVE THE COMPILED FILES DURING RUNTIME
 bin_folder := $(shell mkdir -p bin)
@@ -14,7 +15,7 @@ message.o: data_structures/message.cpp
 	$(CC) -g -c $(CFLAGS) $(INCLUDECADMIUM) $(INCLUDEDESTIMES) data_structures/message.cpp -o build/message.o
 
 main_top.o: top_model/main.cpp
-	$(CC) -g -c $(CFLAGS) $(INCLUDECADMIUM) $(INCLUDEDESTIMES) top_model/main.cpp -o build/main_top.o
+	$(CC) -g -c $(CFLAGS) $(INCLUDECADMIUM) $(INCLUDEDESTIMES) $(INCLUDEJSONEXPORTER) top_model/main.cpp -o build/main_top.o
 	
 main_subnet_test.o: test/main_subnet_test.cpp
 	$(CC) -g -c $(CFLAGS) $(INCLUDECADMIUM) $(INCLUDEDESTIMES) test/main_subnet_test.cpp -o build/main_subnet_test.o

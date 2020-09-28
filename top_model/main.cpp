@@ -23,6 +23,9 @@
 #include <algorithm>
 #include <string>
 
+//Json exporter header
+#include <dynamic_json_exporter.hpp>
+
 
 using namespace std;
 using namespace cadmium;
@@ -141,6 +144,12 @@ int main(int argc, char ** argv) {
             return out_state;
         }
     };
+    static ofstream out_JSON("../ABP_json.json");
+    struct oss_sink_JSON{
+        static ostream& sink(){          
+            return out_state;
+        }
+    };
     
     using state=logger::logger<logger::logger_state, dynamic::logger::formatter<TIME>, oss_sink_state>;
     using log_messages=logger::logger<logger::logger_messages, dynamic::logger::formatter<TIME>, oss_sink_messages>;
@@ -152,5 +161,6 @@ int main(int argc, char ** argv) {
     /************** Runner call ************************/ 
     dynamic::engine::runner<NDTime, logger_top> r(TOP, {0});
     r.run_until_passivate();
+    dynamic_export_model_to_json(out_JSON, TOP);
     return 0;
 }

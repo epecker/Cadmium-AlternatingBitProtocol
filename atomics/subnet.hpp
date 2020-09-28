@@ -87,7 +87,7 @@ template<typename TIME> class Subnet{
     }
 
     friend ostringstream& operator<<(ostringstream& os, const typename Subnet<TIME>::state_type& i) {
-        os << "index: " << i.index << " & transmitting: " << i.transmitting; 
+        os << "<" << i.index << ", " << i.transmitting << ">"; 
         return os;
     }
 };    

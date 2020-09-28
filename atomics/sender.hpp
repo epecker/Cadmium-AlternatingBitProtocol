@@ -152,7 +152,7 @@ template<typename TIME> class Sender{
         }
 
         friend std::ostringstream& operator<<(std::ostringstream& os, const typename Sender<TIME>::state_type& i) {
-            os << "packetNum: " << i.packetNum << " & totalPacketNum: " << i.totalPacketNum; 
+            os << "<" << i.packetNum << ", " << i.totalPacketNum << ">"; 
         return os;
         }
 };     
