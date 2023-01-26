@@ -1,12 +1,12 @@
+# Alternate Bit Protocol (ABP) example
+
 This folder contains the ALTERNATE BIT PROTOCOL DEVS model implemented in Cadmium
 
-/**************************/
-/****FILES ORGANIZATION****/
-/**************************/
+## Files Organization
 
-README.txt	
-alternatebitprotocol.doc
-makefile
+* README.md	
+* alternatebitprotocol.doc
+* makefile
 
 atomics [This folder contains atomic models implemented in Cadmium]
 	receiver.hpp
@@ -35,32 +35,33 @@ test [This folder the unit test of the atomic models]
 top_model [This folder contains the Alternate Bit Protocol top model]	
 	main.cpp
 	
-/*************/
-/****STEPS****/
-/*************/
+## Steps
 
-0 - alternatebitprotocol.doc contains the explanation of this model
+0. alternatebitprotocol.doc contains the explanation of this model
 
-1 - Update include path in the makefile in this folder and subfolders. You need to update the following lines:
+1. Update include path in the makefile in this folder and subfolders. You need to update the following lines:
 	INCLUDECADMIUM=-I ../../cadmium/include
 	INCLUDEDESTIMES=-I ../../DESTimes/include
     Update the relative path to cadmium/include from the folder where the makefile is. You need to take into account where you copied the folder during the installation process
 	Example: INCLUDECADMIUM=-I ../../cadmium/include
 	Do the same for the DESTimes library
     NOTE: if you follow the step by step installation guide you will not need to update these paths.
-2 - Compile the project and the tests
+
+2. Compile the project and the tests
 	1 - Open the terminal (Ubuntu terminal for Linux and Cygwin for Windows) in the ABP folder
 	3 - To compile the project and the tests, type in the terminal:
 			make clean; make all
-3 - Run subnet test
+
+3. Run subnet test
 	1 - Open the terminal in the bin folder. 
 	2 - To run the test, type in the terminal "./NAME_OF_THE_COMPILED_FILE" (For windows, "./NAME_OF_THE_COMPILED_FILE.exe"). 
 	For this specific test you need to type:
 			./SUBNET_TEST (or ./SUBNET_TEST.exe for Windows)
 	3 - To check the output of the test, go to the folder simulation_results and open  "subnet_test_output_messages.txt" and "subnet_test_output_state.txt"
-4 - To run receiver and sender tests you just need to select the proper executable name in step 3.2
+
+4. To run receiver and sender tests you just need to select the proper executable name in step 3.2
 			
-5 - Run the top model
+5. Run the top model
 	1 - Open the terminal (Ubuntu terminal for Linux and Cygwin for Windows) in the bin folder.
 	3 - To run the model, type in the terminal "./NAME_OF_THE_COMPILED_FILE NAME_OF_THE_INPUT_FILE". For this test you need to type:
 		./ABP ../input_data/input_abp_1.txt (for Windows: ./ABP.exe ../input_data/input_abp_1.txt)
@@ -70,3 +71,10 @@ top_model [This folder contains the Alternate Bit Protocol top model]
 		5.2. Run the model using the instructions in step 3
 		5.3. If you want to keep the output, rename a"abp_output_messasges.txt" and "abp_output_state.txt". Otherwise it will be overwritten when you run the next simulation.
 
+## Building in Windows
+
+To build this model with Visual Stuido in Windows follow these steps:
+1. Open Visual Studio and go to `File -> Open -> Folder` and choose the folder `Alternating_Bit_Protocol`.
+2. Then choose the `Test` configuration for CMake.
+3. To make CMake run again with this configuration go to `Project -> Configure Cache`. A folder `build` should have been create inside the root folder.
+4. Then go to `Build -> Build All`. If everything goes OK, the executable files should be placed in the `build` folder.
