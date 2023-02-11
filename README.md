@@ -71,10 +71,34 @@ top_model [This folder contains the Alternate Bit Protocol top model]
 		5.2. Run the model using the instructions in step 3
 		5.3. If you want to keep the output, rename a"abp_output_messasges.txt" and "abp_output_state.txt". Otherwise it will be overwritten when you run the next simulation.
 
-## Building in Windows
+## Building with Visual Studio in Windows
 
 To build this model with Visual Stuido in Windows follow these steps:
-1. Open Visual Studio and go to `File -> Open -> Folder` and choose the folder `Alternating_Bit_Protocol`.
-2. Then choose the `Test` configuration for CMake.
-3. To make CMake run again with this configuration go to `Project -> Configure Cache`. A folder `build` should have been create inside the root folder.
-4. Then go to `Build -> Build All`. If everything goes OK, the executable files should be placed in the `build` folder.
+1. Open Visual Studio Community
+2. Click `Open a local folder` or go to `File -> Open -> Folder`.
+3. Open the repository in the folder `Alternating_Bit_Protocol`. 
+4. Generate the build files. Visual Studio Community does this automatically, otherwise go to `Project -> Configure Cache`.
+5. Build the project: `Build -> Build All`. If everything went OK, the executable files should be placed in the `out/` folder.
+6. Finally, select a startup item to run the project
+7. Visual Studio Community will regenerate the cmake cache on CMakeList.txt changes.
+
+An alternative way to build the project is by means of a PowerShell terminal:
+* Open a PowerShell terminal
+* Go to the folder of the example: 
+```powershell
+cd <path-to-alternating_bit_protocol>
+```
+* Create a folder `build`: 
+```powershell
+mkdir build
+```
+* Enter the folder an run cmake:
+```powershell
+cd build
+cmake ..
+```
+* Build the project
+```powershell
+cmake --build .
+```
+* You will find the executables in the subdirectory `Debug`.
